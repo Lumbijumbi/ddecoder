@@ -2,7 +2,7 @@ module github.com/sting420/ddecoder/cmd/gui
 
 go 1.24.9
 
-replace github.com/sting420/ddecoder => /home/runner/work/ddecoder/ddecoder
+replace github.com/sting420/ddecoder => ../..
 
 require (
 	fyne.io/fyne/v2 v2.7.0
