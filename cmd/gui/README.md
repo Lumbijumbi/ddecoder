@@ -1,13 +1,15 @@
-# DataDome Decoder GUI
+# DataDome Encoder/Decoder GUI
 
-A standalone GUI application for decoding DataDome payloads, built with [Fyne](https://fyne.io) for cross-platform compatibility including macOS.
+A standalone GUI application for encoding and decoding DataDome payloads, built with [Fyne](https://fyne.io) for cross-platform compatibility including macOS.
 
 ## Features
 
-- User-friendly graphical interface
+- User-friendly graphical interface with tabbed interface
+- **Decoder Tab**: Decode DataDome payloads to JSON
+- **Encoder Tab**: Encode JSON data to DataDome payloads
 - Support for all encoding seed types (Interstitial, Captcha, Tags)
 - Cross-platform support (macOS, Windows, Linux)
-- Real-time decoding with error handling
+- Real-time encoding/decoding with error handling
 - Native macOS app bundle support
 - High-resolution display (Retina) support on macOS
 - Follows macOS Human Interface Guidelines
@@ -107,11 +109,23 @@ make package-linux
 
 ## Usage
 
-1. Launch the application
+### Decoder Tab
+
+1. Launch the application and select the "Decoder" tab
 2. Select the appropriate seed type (Interstitial, Captcha, or Tags)
 3. Paste your encoded DataDome payload in the input field
-4. Click "Decode" to see the decoded result
+4. Click "Decode" to see the decoded JSON result
 5. Use "Clear" to reset the fields
+
+### Encoder Tab
+
+1. Launch the application and select the "Encoder" tab
+2. Select the appropriate seed type (Interstitial, Captcha, or Tags)
+3. Enter the CID (Client ID) value
+4. Enter the hash value
+5. Paste your JSON data in the input field
+6. Click "Encode" to see the encoded payload result
+7. Use "Clear" to reset all fields
 
 ## Seed Types
 
@@ -124,7 +138,8 @@ make package-linux
 The GUI application uses:
 - **Fyne v2**: Modern, native-looking GUI framework
 - **Go modules**: For dependency management
-- **Local decoder library**: Uses the core ddecoder library via Go replace directive
+- **Local encoder/decoder library**: Uses the core ddecoder library via Go replace directive
+- **Tabbed interface**: Separate tabs for encoding and decoding operations
 
 ## License
 

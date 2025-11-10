@@ -10,9 +10,26 @@ import (
 
 func main() {
 	a := app.New()
-	w := a.NewWindow("DataDome Payload Decoder")
-	w.Resize(fyne.NewSize(800, 600))
+	w := a.NewWindow("DataDome Payload Encoder/Decoder")
+	w.Resize(fyne.NewSize(900, 650))
 
+	// Create decoder tab
+	decoderTab := createDecoderTab()
+
+	// Create encoder tab
+	encoderTab := createEncoderTab()
+
+	// Create tabs
+	tabs := container.NewAppTabs(
+		container.NewTabItem("Decoder", decoderTab),
+		container.NewTabItem("Encoder", encoderTab),
+	)
+
+	w.SetContent(tabs)
+	w.ShowAndRun()
+}
+
+func createDecoderTab() *fyne.Container {
 	// Input field for encoded data
 	input := widget.NewMultiLineEntry()
 	input.SetPlaceHolder("Paste encoded data here...")
@@ -64,10 +81,8 @@ func main() {
 	})
 
 	// Layout
-	w.SetContent(container.NewBorder(
+	return container.NewBorder(
 		container.NewVBox(
-			widget.NewLabel("DataDome Payload Decoder"),
-			widget.NewSeparator(),
 			container.NewHBox(
 				widget.NewLabel("Seed Type:"),
 				seedSelect,
@@ -83,12 +98,108 @@ func main() {
 				input,
 			),
 			container.NewBorder(
-				widget.NewLabel("Output (Decoded Data):"),
+				widget.NewLabel("Output (Decoded JSON):"),
 				nil, nil, nil,
 				output,
 			),
 		),
-	))
+	)
+}
 
-	w.ShowAndRun()
+func createEncoderTab() *fyne.Container {
+	// Input field for JSON data
+	jsonInput := widget.NewMultiLineEntry()
+	jsonInput.SetPlaceHolder("Paste JSON data here...")
+	jsonInput.Wrapping = fyne.TextWrapWord
+
+	// Output field for encoded data
+	encodedOutput := widget.NewMultiLineEntry()
+	encodedOutput.SetPlaceHolder("Encoded result will appear here...")
+	encodedOutput.Wrapping = fyne.TextWrapWord
+	encodedOutput.Disable()
+
+	// Seed type selector
+	seedSelect := widget.NewSelect([]string{"Interstitial", "Captcha", "Tags"}, nil)
+	seedSelect.SetSelected("Interstitial")
+
+	// CID input
+	cidInput := widget.NewEntry()
+	cidInput.SetPlaceHolder("Enter CID...")
+
+	// Hash input
+	hashInput := widget.NewEntry()
+	hashInput.SetPlaceHolder("Enter hash...")
+
+	// Encode button
+	encodeButton := widget.NewButton("Encode", func() {
+		jsonData := jsonInput.Text
+		cid := cidInput.Text
+		hash := hashInput.Text
+
+		if jsonData == "" || cid == "" || hash == "" {
+			encodedOutput.SetText("Error: Please provide JSON data, CID, and hash")
+			return
+		}
+
+		var seed decoder.EncodingSeed
+		switch seedSelect.Selected {
+		case "Interstitial":
+			seed = decoder.Interstitial
+		case "Captcha":
+			seed = decoder.Captcha
+		case "Tags":
+			seed = decoder.Tags
+		default:
+			seed = decoder.Interstitial
+		}
+
+		result, err := decoder.Encode(jsonData, cid, hash, seed)
+		if err != nil {
+			encodedOutput.SetText("Error: " + err.Error())
+			return
+		}
+
+		encodedOutput.SetText(result)
+	})
+
+	// Clear button
+	clearButton := widget.NewButton("Clear", func() {
+		jsonInput.SetText("")
+		cidInput.SetText("")
+		hashInput.SetText("")
+		encodedOutput.SetText("")
+	})
+
+	// Layout
+	return container.NewBorder(
+		container.NewVBox(
+			container.NewHBox(
+				widget.NewLabel("Seed Type:"),
+				seedSelect,
+			),
+			container.NewHBox(
+				widget.NewLabel("CID:"),
+				cidInput,
+			),
+			container.NewHBox(
+				widget.NewLabel("Hash:"),
+				hashInput,
+			),
+		),
+		container.NewHBox(encodeButton, clearButton),
+		nil,
+		nil,
+		container.NewVSplit(
+			container.NewBorder(
+				widget.NewLabel("Input (JSON Data):"),
+				nil, nil, nil,
+				jsonInput,
+			),
+			container.NewBorder(
+				widget.NewLabel("Output (Encoded Payload):"),
+				nil, nil, nil,
+				encodedOutput,
+			),
+		),
+	)
 }
