@@ -1,0 +1,12 @@
+# Binaries
+ddecoder-gui
+ddecoder-gui.exe
+*.app
+
+# Build artifacts
+*.test
+*.prof
+
+# Go workspace
+go.work
+go.work.sum
